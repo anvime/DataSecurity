@@ -1,1 +1,3 @@
 src/db.db
+.idea*
+src/__pycache__/*
