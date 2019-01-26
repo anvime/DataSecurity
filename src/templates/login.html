@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Home page</title>
+  <title>Login page</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
@@ -39,16 +39,6 @@
       }
       .row.content {height:auto;}
     }
-    #post
-    {
-        height:auto;
-        width: auto;
-        font-size:12pt;
-        padding: 15px;
-    }
-      .h4 {
-          color:white;
-      }
   </style>
 </head>
 
@@ -63,12 +53,11 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Strona domowa</a></li>
-          <li><a href="/logout">Wyloguj się</a>
-          <li><a href="/changePasswd">Zmień hasło</a>
+        <li><a href="index">Index</a></li>
+          <li><a href="register">Zarejestruj się</a></li>
+          <li class="active"><a href="login">Zaloguj się</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-          <li class="active"><h4>Zalogowany jako: {{username}}</h4></li>
       </ul>
     </div>
   </div>
@@ -77,50 +66,17 @@
 <div class="container-fluid text-center">
   <div class="row content">
     <div class="col-sm-2 sidenav">
-        <div id="accountCreated">
-
-  </div>
     </div>
     <div class="col-sm-8 text-left">
-      <div>
-      <form method="POST" action="/post">
-      <label for="Post"></label><br/>
-      <input type="text" id="post" name="post" placeholder="O czym myslisz?"><br />
-          <p> </p>
-          <p> </p>
-          <p> </p>
-          <p> </p>
-      <input type="submit" value="Zapisz post">
+  <div id="loginFormContainer">
+    <form method="POST" action="/signIn">
+      <label for="login">Nazwa użytkownika</label><br />
+      <input type="text" id="login" name="login" placeholder="Nazwa użytkownika..."><br />
+      <label for="password">Hasło</label><br />
+      <input type="password" id="password" name="password" placeholder="Hasło..."><br />
+      <input type="submit" value="Zaloguj się">
     </form>
   </div>
-      <table class="table">
-        <thead>
-        <tr>
-            <th>Twoje posty:</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for post in postslist %}
-        <tr>
-            <td>
-                {{ post.post }}
-            </td>
-            <td>
-            </td>
-            <td>
-                <form method="POST" action='/delete'>
-                   <input type="hidden" name="postID" id="postID" value="{{ post.id }}">
-                    <input type="submit" value="Usuń"/><br/>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
     </div>
     <div class="col-sm-2 sidenav">
       </div>
@@ -130,4 +86,3 @@
 <footer>Wykonała: Anna Konieczna</footer>
 </body>
 </html>
-
