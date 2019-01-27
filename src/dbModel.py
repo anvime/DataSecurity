@@ -15,6 +15,8 @@ class Users (db.Model):
     username = db.Column('username', db.String(20), unique=True, nullable=False)
     email = db.Column('email', db.String(120), unique=True, nullable=False)
     password = db.Column('password', db.String(250), unique=True, nullable=False)
+    question = db.Column('question', db.String(250), nullable=False)
+    answer = db.Column('answer', db.String(250), nullable=False)
 
 class Posts (db.Model):
     __tablename__ = "Post"

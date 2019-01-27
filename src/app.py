@@ -38,11 +38,37 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/forgottenPassword', methods=['POST', 'GET'])
+def forgottenPassword():
+    return render_template('forgottenPassword.html')
+
+
+@app.route('/retrievePassword', methods=['POST', 'GET'])
+def retrievePassword():
+    _username = request.form['login']
+    _answer = request.form['answer']
+    user = dbModel.Users.query.filter_by(username=_username).first()
+
+    if not user:
+        return render_template('notify.html', messageContent="Użytkownik o takiej nazwie nie istnieje")
+    if _answer:
+        if validateQuestionAnswer(_answer):
+            if verifyPassword(user.answer, _answer):
+                session['user']=_username
+                return render_template('changePasswordLogged.html')
+            return render_template('notify.html', messageContent="Błędna odpowiedź")
+        return render_template('notify.html', messageContent="Niepoprawna odpowiedź")
+    question = user.question
+    return render_template('forgottenPassword.html', username=user.username, question=question)
+
+
 @app.route('/signUp', methods=['POST'])
 def signUp():
     _username = request.form['login']
     _email = request.form['email']
     _password = request.form['password']
+    _question = request.form['question']
+    _answer = request.form['answer']
 
     if not validateUsername(_username):
         return render_template("notify.html",
@@ -52,6 +78,7 @@ def signUp():
         return render_template('notify.html', messageContent="Niepoprawny email")
 
     _hashedPassword = hashPassword(_password)
+    delayAction()
 
     usernameAlreadyExists = dbModel.Users.query.filter_by(username=_username).first()
     if usernameAlreadyExists:
@@ -61,12 +88,17 @@ def signUp():
     if emialAlreadyExists:
         return render_template('notify.html', messageContent="Adres email zajęty")
 
-    new_user = dbModel.Users(username=_username, email=_email, password=_hashedPassword)
+    if not validateQuestionAnswer(_question):
+        return render_template('notify.html', messageContent="Pytanie jest niepoprawne")
+
+    if not validateQuestionAnswer(_answer):
+        return render_template('notify.html', messageContent="Odpowiedź jest niepoprawna")
+
+    _hashedAnswer = hashPassword(_answer)
+
+    new_user = dbModel.Users(username=_username, email=_email, password=_hashedPassword, question=_question, answer = _hashedAnswer)
     db.session.add(new_user)
     db.session.commit()
-
-    # admin
-    # Enter12345!
 
     return render_template('notify.html',
                            messageContent="Użytkownik zarejestrowany pomyślnie")
@@ -80,6 +112,8 @@ def signIn():
         return render_template("notify.html", messageContent="Błedny login lub hasło")
 
     user_to_signin = dbModel.Users.query.filter_by(username=_username).first()
+
+    delayAction()
 
     if user_to_signin:
         if verifyPassword(user_to_signin.password, _password):
@@ -145,6 +179,12 @@ def hashPassword(password):
     passwdhash = binascii.hexlify(passwdhash)
     return (salt + passwdhash).decode('ascii')
 
+def hashAnswer(answer):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    answerhash = hashlib.pbkdf2_hmac('sha512', answer.encode('utf-8'),
+                                     salt, 100000)
+    answerhash = binascii.hexlify(answerhash)
+    return (salt + answerhash).decode('ascii')
 
 def validateEmail(email):
     return re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email)
@@ -156,11 +196,21 @@ def validateUsername(username):
 def validatePost(post):
     if len(post) > 250:
         return False
-    blacklist = ['<', '>', '{', '}', '/', '\\', '*', '_', 'kurwa', 'yolo']
+    blacklist = ['<', '>', '{', '}', '/', '\\', '*', '_']
 
     if any([x in post for x in blacklist]):
         return False
     return re.match(r"", post)
+
+def validateQuestionAnswer(question):
+    if len(question) > 120:
+        return False
+
+    blacklist = ['<', '>', '{', '}', '/', '\\', '*', '_']
+
+    if any([x in question for x in blacklist]):
+        return False
+    return re.match(r"", question)
 
 @app.route('/changePasswd')
 def changePasswd():
@@ -187,6 +237,23 @@ def changePassword():
     else:
         return render_template('notify.html',
                                messageContent="Błędne hasło")
+
+@app.route('/changePasswordLogged', methods=['POST'])
+def changePasswordLogged():
+    _newPassword = request.form['password']
+    _username = session['user']
+
+    user = dbModel.Users.query.filter_by(username=_username).first()
+
+    _hashedNewPassword = hashPassword(_newPassword)
+
+    delayAction()
+
+    user.password = _hashedNewPassword
+    db.session.commit()
+
+    return render_template('notify.html', messageContent="Hasło zostało zmienione")
+
 
 @app.route('/delete', methods=['POST'])
 def deletepost():

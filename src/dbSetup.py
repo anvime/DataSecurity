@@ -16,9 +16,11 @@ def setup():
         username = Column('username', String(20), unique=True, nullable=False)
         email = Column('email', String(120), unique=True, nullable=False)
         password = Column('password', String(250), unique=True, nullable=False)
+        question = Column('question', String(250), nullable=False)
+        answer =Column('answer', String(250), nullable=False)
 
         def __repr__(self):
-            return f"User('{self.id}','{self.username}','{self.email}') "
+            return f"User('{self.id}','{self.username}','{self.email}','{self.question}','{self.answer}')"
 
     class Posts(Base):
         __tablename__ = "Post"
