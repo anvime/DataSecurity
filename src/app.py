@@ -46,20 +46,20 @@ def signUp():
 
     if not validateUsername(_username):
         return render_template("notify.html",
-                               messageContent="Podana nazwa użytkownika jest niewłaściwa. Nazwa może składać się z liter, cyfr oraz znaków kropki i podkreślnika.")
+                               messageContent="Nazwa użytkownika może zawierać litery, cyfry, znak '.' oraz '_', pozostałe znaki są niedozwolone!")
 
     if not validateEmail(_email):
-        return render_template('notify.html', messageContent="Adres email jest niepoprawny")
+        return render_template('notify.html', messageContent="Niepoprawny email")
 
     _hashedPassword = hashPassword(_password)
 
     usernameAlreadyExists = dbModel.Users.query.filter_by(username=_username).first()
     if usernameAlreadyExists:
-        return render_template('notify.html', messageContent="Nazwa użytkownika jest już zajęta")
+        return render_template('notify.html', messageContent="Nazwa użytkownika zajęta")
 
     emialAlreadyExists = dbModel.Users.query.filter_by(email=_email).first()
     if emialAlreadyExists:
-        return render_template('notify.html', messageContent="Adres email jest już w użyciu")
+        return render_template('notify.html', messageContent="Adres email zajęty")
 
     new_user = dbModel.Users(username=_username, email=_email, password=_hashedPassword)
     db.session.add(new_user)
@@ -77,7 +77,7 @@ def signIn():
     _password = request.form['password']
 
     if not validateUsername(_username):
-        return render_template("notify.html", messageContent="Niepoprawna nazwa użytkownika lub hasło")
+        return render_template("notify.html", messageContent="Błedny login lub hasło")
 
     user_to_signin = dbModel.Users.query.filter_by(username=_username).first()
 
@@ -85,7 +85,7 @@ def signIn():
         if verifyPassword(user_to_signin.password, _password):
             session['user'] = _username
             return redirect('/userHome')
-    return render_template('notify.html', messageContent="Niepoprawna nazwa użytkownika lub hasło")
+    return render_template('notify.html', messageContent="Błędny login lub hasło")
 
 
 @app.route('/userHome', methods=['GET'])
@@ -186,7 +186,7 @@ def changePassword():
 
     else:
         return render_template('notify.html',
-                               messageContent="Hasło nie zostało zmienione z powodu podania niepoprawnego aktualnego hasła")
+                               messageContent="Błędne hasło")
 
 @app.route('/delete', methods=['POST'])
 def deletepost():
@@ -201,4 +201,4 @@ def delayAction():
     time.sleep(delayTime)
 
 if __name__ == '__main__':
-    app.run(port=5001, ssl_context=('cert.pem', 'key.pem'))
+    app.run(port=5000, ssl_context=('cert.pem', 'key.pem'))

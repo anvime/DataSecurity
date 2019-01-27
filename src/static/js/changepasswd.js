@@ -13,26 +13,26 @@ function Validate() {
 
   if (oldpassword != null) {
     if (oldpassword.value == "") {
-      oldpassword.style.border = "1px solid red";
-      old_passwordError.textContent = "To pole jest wymagane";
+      oldpassword.style.border = "2px solid red";
+      old_passwordError.textContent = "Pole wymagane";
       return false;
     }
   }
 
   if (regpassword.value == "") {
-    regpassword.style.border = "1px solid red";
-    passwordError.textContent = "To pole jest wymagane";
+    regpassword.style.border = "2px solid red";
+    passwordError.textContent = "Pole wymagane";
     return false;
   }
 
   if (confirm_password.value == "") {
-    confirm_password.style.border = "1px solid red";
-    conPassError.textContent = "To pole jest wymagane";
+    confirm_password.style.border = "2px solid red";
+    conPassError.textContent = "Pole wymagane";
     return false;
   }
 
   if (regpassword.value != confirm_password.value) {
-    confirm_password.style.border = "1px solid red";
+    confirm_password.style.border = "2px solid red";
     conPassError.textContent = "Hasła nie są identyczne"
     return false;
   }
@@ -40,7 +40,7 @@ function Validate() {
 
 function oldPasswordVerify() {
   if (oldpassword.value != "") {
-    oldpassword.style.border = "1px solid #ccc";
+    oldpassword.style.border = "2px solid #ccc";
     old_passwordError.innerHTML = "";
     return true;
   }
@@ -48,7 +48,7 @@ function oldPasswordVerify() {
 
 function passwordVerify() {
   if (regpassword.value != "") {
-    regpassword.style.border = "1px solid #ccc";
+    regpassword.style.border = "2px solid #ccc";
     passwordError.innerHTML = "";
     return true;
   }
@@ -82,19 +82,19 @@ function checkPasswordStrength() {
       break
     case 1:
       passStr.style.color = "#f44b42";
-      passStr.textContent = "Siła hasła: SŁABE";
+      passStr.textContent = "SŁABE";
       break
     case 2:
       passStr.style.color = "#f47741";
-      passStr.textContent = "Siła hasła: ŚREDNIE";
+      passStr.textContent = "ŚREDNIE";
       break
     case 3:
       passStr.style.color = "#f4a341";
-      passStr.textContent = "Siła hasła: SILNE";
+      passStr.textContent = "SILNE";
       break
     case 4:
       passStr.style.color = "#2d8e32";
-      passStr.textContent = "Siła hasła: BARDZO SILNE";
+      passStr.textContent = "BARDZO SILNE";
       break
   }
 }
